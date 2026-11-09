@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for the SupplyChain Frontend Azure modernization plan.",
+  "tasks": [
+    {
+      "type": "setupBaseline",
+      "id": "001-setupBaseline",
+      "description": "Capture the current SupplyChain Frontend behavior before modernization.",
+      "requirements": "Snapshot the application's main source directory, src, and record a frozen test specification for the existing UI and backend API integration. Include the real/mock strategy for each external dependency; use mocks because no target Azure environment was provided."
+    },
+    {
+      "type": "integrationTest",
+      "id": "002-integrationTest",
+      "description": "Build integration tests for migrated Azure services and run post-migration verification",
+      "requirements": "Use the frozen baseline test specification to verify the frontend after modernization. Use mocked backend API dependencies; no Azure integration resources were specified.",
+      "dependencies": [
+        "001-setupBaseline"
+      ]
+    },
+    {
+      "type": "security",
+      "id": "003-security",
+      "description": "Scan project dependencies for known CVEs and remediate identified vulnerabilities.",
+      "requirements": "Scan all project dependencies for known CVEs and remediate any identified vulnerabilities by upgrading to the minimum patched versions. If remediation requires a major-version upgrade, document the affected dependency, current and target versions, and breaking-change risks. Verify the project builds and its tests pass.",
+      "successCriteria": {
+        "passBuild": "true",
+        "passUnitTests": "true"
+      },
+      "dependencies": [
+        "002-integrationTest"
+      ]
+    },
+    {
+      "type": "deployment",
+      "id": "004-deployment",
+      "description": "Deploy the SupplyChain Frontend to Azure Container Apps.",
+      "requirements": "Deploy the existing frontend and its container image to an existing Azure Container Apps environment. Preserve the current UI routes and backend API integration. Do not provision new Azure infrastructure; obtain the target environment and deployment configuration before execution.",
+      "skills": [
+        {
+          "name": "azcli-containerapp-deploy",
+          "location": "builtin"
+        }
+      ],
+      "targetAzureService": "azurecontainerapp",
+      "resourceStatus": "Use an existing Azure Container Apps environment; target details are not provided.",
+      "deploymentTool": "bicep",
+      "dependencies": [
+        "003-security"
+      ]
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan",
+    "projectName": "SupplyChain Frontend",
+    "language": "java",
+    "createdAt": "2026-11-09T10:26:34Z",
+    "version": "1.0"
+  }
+}
